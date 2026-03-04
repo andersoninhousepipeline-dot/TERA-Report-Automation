@@ -161,6 +161,7 @@ RESULT_CFG = {
         "blast_x": 171.7, "blast_y": H - 613.0,
         "cleave_x":170.4, "cleave_y": H - 670.6,
         "reco_suffix": "post first progesterone intake",
+        "recom_max_w": 303,
         # Icon
         "icon_y": H - 706.5,
         # Status text content
@@ -178,6 +179,7 @@ RESULT_CFG = {
         "blast_x": 171.7, "blast_y": H - 609.7,
         "cleave_x":170.4, "cleave_y": H - 667.3,
         "reco_suffix": "post first progesterone intake",
+        "recom_max_w": 303,
         "icon_y": H - 703.3,
         "bold_phrase": "pre-receptive endometrium",
         "displaced":   True,
@@ -193,6 +195,7 @@ RESULT_CFG = {
         "blast_x": 171.7, "blast_y": H - 604.2,
         "cleave_x":170.4, "cleave_y": H - 661.8,
         "reco_suffix": "post first P4 intake",
+        "recom_max_w": 380,
         "icon_y": H - 697.75,
         "bold_phrase": "post-receptive endometrium",
         "displaced":   True,
@@ -495,15 +498,17 @@ class TERAReportGenerator:
             note_y = cfg["recom_line_y"] - 20
             _wrap(c, note, 83.4, note_y, TBL_W - 20, F_BBOLD, 11, 14)
 
+        reco_w = cfg.get("recom_max_w", 380.0)
+
         # 5. Blastocyst transfer line
         _wrap(c,
               f"Blastocyst transfer (Day 5/6 embryo): {blast_lbl} {suffix}",
-              cfg["blast_x"], cfg["blast_y"], 380.0, F_BBOLD, 11, 17)
+              cfg["blast_x"], cfg["blast_y"], reco_w, F_BBOLD, 11, 17)
 
         # 6. Cleavage stage transfer line
         _wrap(c,
               f"Cleavage stage transfer (Day 3 embryo): {cleave_lbl} {suffix}",
-              cfg["cleave_x"], cfg["cleave_y"], 380.0, F_BBOLD, 11, 17)
+              cfg["cleave_x"], cfg["cleave_y"], reco_w, F_BBOLD, 11, 17)
 
     # ═══════════════════════════════════════════════════════════════════════════
     # PAGE 2 – About TERA + Methodology
