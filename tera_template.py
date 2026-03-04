@@ -297,27 +297,23 @@ class TERAReportGenerator:
     def _header(self, c):
         """Draw header.
         with_logo=True  → Anderson shared header image (tera_assets.HEADER_LOGO).
-        with_logo=False → plain blue bar only (no letterhead image).
+        with_logo=False → nothing (no header image, no placeholder).
         """
+        if not self.with_logo:
+            return
         c.saveState()
-        if self.with_logo:
-            try:
-                c.drawImage(_img(tera_assets.HEADER_LOGO),
-                            HDR_X, HDR_Y, width=HDR_W, height=HDR_H,
-                            mask="auto", preserveAspectRatio=False)
-            except Exception as e:
-                print(f"[TERA] Header err: {e}")
-        else:
-            # Without logo: blue bar preserves spacing
-            c.setFillColor(BLUE)
-            c.rect(HDR_X, HDR_Y, HDR_W, HDR_H, fill=1, stroke=0)
-            c.setFillColor(WHITE)
-            c.setFont(F_TITLE, 11)
-            c.drawCentredString(HDR_X + HDR_W / 2, HDR_Y + HDR_H / 2 - 5,
-                                "Anderson Diagnostics & Labs")
+        try:
+            c.drawImage(_img(tera_assets.HEADER_LOGO),
+                        HDR_X, HDR_Y, width=HDR_W, height=HDR_H,
+                        mask="auto", preserveAspectRatio=False)
+        except Exception as e:
+            print(f"[TERA] Header err: {e}")
         c.restoreState()
 
     def _footer(self, c):
+        """Draw footer image only when with_logo=True."""
+        if not self.with_logo:
+            return
         c.saveState()
         try:
             c.drawImage(_img(tera_assets.FOOTER),
