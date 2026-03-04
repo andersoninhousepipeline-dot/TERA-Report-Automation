@@ -118,8 +118,8 @@ F_BODY   = "DengXian"        if _font_ok("DengXian")        else "Helvetica"
 F_BBOLD  = "DengXian-Bold"   if _font_ok("DengXian-Bold")   else "Helvetica-Bold"
 F_SIG    = "SegoeUI"         if _font_ok("SegoeUI")         else "Helvetica"
 F_SIGB   = "SegoeUI-Bold"    if _font_ok("SegoeUI-Bold")    else "Helvetica-Bold"
-# Bullet: SymbolMT matches reference PDF (U+2022 embeds correctly)
-F_BULLET = "SymbolMT"        if _font_ok("SymbolMT")        else ("Calibri" if _font_ok("Calibri") else "Helvetica")
+# Bullet: DengXian is the body font and reliably renders U+2022 as a filled circle
+F_BULLET = "DengXian"        if _font_ok("DengXian")        else ("Calibri" if _font_ok("Calibri") else "Helvetica")
 
 print(f"[tera_template] Fonts: TITLE={F_TITLE}  LBL={F_LBL}  BODY={F_BODY}  BULLET={F_BULLET}")
 
@@ -161,7 +161,7 @@ RESULT_CFG = {
         "blast_x": 171.7, "blast_y": H - 613.0,
         "cleave_x":170.4, "cleave_y": H - 670.6,
         "reco_suffix": "post first progesterone intake",
-        "recom_max_w": 303,
+        "recom_max_w": 315,
         # Icon
         "icon_y": H - 706.5,
         # Status text content
@@ -179,7 +179,7 @@ RESULT_CFG = {
         "blast_x": 171.7, "blast_y": H - 609.7,
         "cleave_x":170.4, "cleave_y": H - 667.3,
         "reco_suffix": "post first progesterone intake",
-        "recom_max_w": 303,
+        "recom_max_w": 315,
         "icon_y": H - 703.3,
         "bold_phrase": "pre-receptive endometrium",
         "displaced":   True,
@@ -772,9 +772,9 @@ class TERAReportGenerator:
         if m:
             base   = round(float(m.group(1)))
             margin = m.group(2)
-            return f"{base} \u00b1 {margin} hrs", f"{base - 48} \u00b1 {margin} hrs"
+            return f"{base} + {margin} hrs", f"{base - 48} + {margin} hrs"
         try:
             base = round(float(raw))
-            return f"{base} \u00b1 2 hrs", f"{base - 48} \u00b1 2 hrs"
+            return f"{base} + 2 hrs", f"{base - 48} + 2 hrs"
         except Exception:
             return raw, "N/A"
