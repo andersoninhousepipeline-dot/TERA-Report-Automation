@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Generated PDFs (patient data — never commit)
+*.pdf
+
+# Draft files (patient data)
+*.json
+!sample_draft.json
+
+# Excel input files (patient data)
+*.xls
+*.xlsx
+
+# Temporary files
+*.tmp
+*.log
+tmp_*/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large binary assets not tracked in git
+# (regenerate with generate_assets_py.py)
+# tera_assets.py is included because it has no patient data
