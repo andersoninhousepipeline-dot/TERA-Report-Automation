@@ -554,23 +554,25 @@ class TERAReportGenerator:
         c.drawString(72, H - 89.2, "About TERA")
         _divider(c, H - 98.85)          # template divider y = H-98.85
 
-        # Body paragraphs – Calibri 11pt, leading 22, justified
+        # Body paragraphs – DengXian 11pt, leading 22, justified
         # First line baseline from template: pdfplumber bottom≈125.4 → H-125.4 = 666.6
         y = H - 125.4
         c.setFillColor(BLACK)
         for para in self.ABOUT_PARAS:
             y = _justified_block(c, para, 72, y, CONTENT_W, F_BODY, 11, 22)
-            y -= 8      # inter-paragraph gap
+            y -= 23     # inter-paragraph gap (matches reference: 23.3 pt bottom-to-top)
 
-        # "Methodology" heading — place 4pt below end of About TERA text
-        meth_y = y - 4
+        # "Methodology" heading — 35pt below last About TERA line
+        # (reference: 67.6 pt from para3 bottom to heading baseline = 23 pt loop gap + 35 pt here
+        #  + ~10 pt from ReportLab paragraph trailing space)
+        meth_y = y - 35
         c.setFont(F_HDG, 14)
         c.setFillColor(BLUE)
         c.drawString(78.9, meth_y, "Methodology")
         _divider(c, meth_y - 9)         # ~9 pt below heading baseline
 
-        # Bullet points – Calibri U+2022 (filled dot), body text 11pt, justified
-        y = meth_y - 30
+        # Bullet points – DengXian U+2022 (filled dot), body text 11pt, justified
+        y = meth_y - 37
         c.setFillColor(BLACK)
         for bullet in self.METHOD_BULLETS:
             c.setFont(F_BULLET, 11)
