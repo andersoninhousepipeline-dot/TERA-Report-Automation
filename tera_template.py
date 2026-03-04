@@ -160,8 +160,8 @@ RESULT_CFG = {
         "has_biopsy2":   False,
         "blast_x": 171.7, "blast_y": H - 613.0,
         "cleave_x":170.4, "cleave_y": H - 670.6,
-        "reco_suffix": "post first progesterone intake",
-        "recom_max_w": 315,
+        "reco_suffix": "post first | progesterone intake",
+        "recom_max_w": 340,
         # Icon
         "icon_y": H - 706.5,
         # Status text content
@@ -178,8 +178,8 @@ RESULT_CFG = {
         "has_biopsy2":   False,
         "blast_x": 171.7, "blast_y": H - 609.7,
         "cleave_x":170.4, "cleave_y": H - 667.3,
-        "reco_suffix": "post first progesterone intake",
-        "recom_max_w": 315,
+        "reco_suffix": "post first | progesterone intake",
+        "recom_max_w": 340,
         "icon_y": H - 703.3,
         "bold_phrase": "pre-receptive endometrium",
         "displaced":   True,
@@ -571,12 +571,12 @@ class TERAReportGenerator:
         c.drawString(78.9, meth_y, "Methodology")
         _divider(c, meth_y - 9)         # ~9 pt below heading baseline
 
-        # Bullet points – DengXian U+2022 (filled dot), body text 11pt, justified
+        # Bullet points – filled circle drawn directly (font-independent), body text 11pt, justified
         y = meth_y - 37
-        c.setFillColor(BLACK)
         for bullet in self.METHOD_BULLETS:
-            c.setFont(F_BULLET, 11)
-            c.drawString(90, y, "\u2022")
+            # Draw bullet as solid filled circle centered vertically with the text cap height
+            c.setFillColor(BLACK)
+            c.circle(92.5, y + 4, 2.5, fill=1, stroke=0)
             y = _justified_block(c, bullet, 108, y, CONTENT_W - 36, F_BODY, 11, 22)
             y -= 10
 
@@ -774,9 +774,9 @@ class TERAReportGenerator:
         if m:
             base   = round(float(m.group(1)))
             margin = m.group(2)
-            return f"{base} + {margin} hrs", f"{base - 48} + {margin} hrs"
+            return f"{base} \u00b1 {margin} hrs", f"{base - 48} \u00b1 {margin} hrs"
         try:
             base = round(float(raw))
-            return f"{base} + 2 hrs", f"{base - 48} + 2 hrs"
+            return f"{base} \u00b1 2 hrs", f"{base - 48} \u00b1 2 hrs"
         except Exception:
             return raw, "N/A"
