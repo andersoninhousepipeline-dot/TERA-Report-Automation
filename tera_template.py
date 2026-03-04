@@ -103,18 +103,23 @@ if _font_ok("SegoeUI") and _font_ok("SegoeUI-Bold"):
         normal="SegoeUI", bold="SegoeUI-Bold",
         italic="SegoeUI", boldItalic="SegoeUI-Bold")
 
+# Register DengXian as a font family so <b> tags in Paragraph render bold correctly
+if _font_ok("DengXian") and _font_ok("DengXian-Bold"):
+    registerFontFamily("DengXian",
+        normal="DengXian", bold="DengXian-Bold",
+        italic="DengXian", boldItalic="DengXian-Bold")
+
 # Font aliases (fall back to Helvetica variants if TTF not loaded)
 F_TITLE  = "GillSansMT-Bold" if _font_ok("GillSansMT-Bold") else "Helvetica-Bold"
 F_HDG    = "GillSansMT-Bold" if _font_ok("GillSansMT-Bold") else "Helvetica-Bold"
 F_LBL    = "SegoeUI-Bold"    if _font_ok("SegoeUI-Bold")    else "Helvetica-Bold"
-# Calibri: full 1.6 MB font (same as PGTA) — renders clean on this Linux/ReportLab stack
-F_BODY   = "Calibri"         if _font_ok("Calibri")         else "Helvetica"
-F_BBOLD  = "Calibri-Bold"    if _font_ok("Calibri-Bold")    else "Helvetica-Bold"
+# DengXian: matches reference PDF body font exactly
+F_BODY   = "DengXian"        if _font_ok("DengXian")        else "Helvetica"
+F_BBOLD  = "DengXian-Bold"   if _font_ok("DengXian-Bold")   else "Helvetica-Bold"
 F_SIG    = "SegoeUI"         if _font_ok("SegoeUI")         else "Helvetica"
 F_SIGB   = "SegoeUI-Bold"    if _font_ok("SegoeUI-Bold")    else "Helvetica-Bold"
-# Bullet: Calibri has U+2022 (confirmed). SymbolMT uses private-use encoding and
-# does NOT map U+2022, causing square boxes. Use Calibri (full 1.6 MB) instead.
-F_BULLET = "Calibri"         if _font_ok("Calibri")         else ("SegoeUI" if _font_ok("SegoeUI") else "Helvetica")
+# Bullet: SymbolMT matches reference PDF (U+2022 embeds correctly)
+F_BULLET = "SymbolMT"        if _font_ok("SymbolMT")        else ("Calibri" if _font_ok("Calibri") else "Helvetica")
 
 print(f"[tera_template] Fonts: TITLE={F_TITLE}  LBL={F_LBL}  BODY={F_BODY}  BULLET={F_BULLET}")
 
@@ -563,7 +568,7 @@ class TERAReportGenerator:
         y = meth_y - 30
         c.setFillColor(BLACK)
         for bullet in self.METHOD_BULLETS:
-            c.setFont(F_BULLET, 13)      # slightly larger for visual weight
+            c.setFont(F_BULLET, 11)
             c.drawString(90, y, "\u2022")
             y = _justified_block(c, bullet, 108, y, CONTENT_W - 36, F_BODY, 11, 22)
             y -= 10
