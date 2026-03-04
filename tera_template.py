@@ -52,18 +52,6 @@ from reportlab.pdfbase.pdfmetrics import registerFontFamily
 
 import tera_assets
 
-# ─── PGTA header (same header image used across all Anderson report types) ─────
-# Imported lazily so TERA can run standalone if PGTA project is absent.
-_PGTA_HEADER_B64 = None
-try:
-    import sys as _sys
-    _sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                     "..", "PGTA-Report"))
-    from pgta_assets import HEADER_LOGO_B64 as _PGTA_HEADER_B64  # noqa: F401
-    _sys.path.pop(0)
-except Exception:
-    _PGTA_HEADER_B64 = None
-
 # ─── Colours ──────────────────────────────────────────────────────────────────
 BLUE     = Color(0.122, 0.286, 0.49)      # #1F497D  – headings & title
 MED_BLUE = Color(0.310, 0.506, 0.741)     # #4F81BD  – "This report reviewed…"
@@ -308,28 +296,24 @@ class TERAReportGenerator:
     # ═══════════════════════════════════════════════════════════════════════════
     def _header(self, c):
         """Draw header.
-        with_logo=True  → PGTA/Anderson shared header image (same as PGTA reports).
-        with_logo=False → plain thin blue rule only (no letterhead image).
+        with_logo=True  → Anderson shared header image (tera_assets.HEADER_LOGO).
+        with_logo=False → plain blue bar only (no letterhead image).
         """
         c.saveState()
         if self.with_logo:
-            # Use PGTA shared header if available, fall back to tera_assets.HEADER
-            hdr_b64 = _PGTA_HEADER_B64 if _PGTA_HEADER_B64 else getattr(tera_assets, "HEADER", None)
-            if hdr_b64:
-                try:
-                    c.drawImage(_img(hdr_b64),
-                                HDR_X, HDR_Y, width=HDR_W, height=HDR_H,
-                                mask="auto", preserveAspectRatio=False)
-                except Exception as e:
-                    print(f"[TERA] Header err: {e}")
+            try:
+                c.drawImage(_img(tera_assets.HEADER_LOGO),
+                            HDR_X, HDR_Y, width=HDR_W, height=HDR_H,
+                            mask="auto", preserveAspectRatio=False)
+            except Exception as e:
+                print(f"[TERA] Header err: {e}")
         else:
-            # Without logo: draw a subtle top bar so layout/spacing is preserved
+            # Without logo: blue bar preserves spacing
             c.setFillColor(BLUE)
             c.rect(HDR_X, HDR_Y, HDR_W, HDR_H, fill=1, stroke=0)
             c.setFillColor(WHITE)
             c.setFont(F_TITLE, 11)
-            c.drawCentredString(HDR_X + HDR_W / 2,
-                                HDR_Y + HDR_H / 2 - 5,
+            c.drawCentredString(HDR_X + HDR_W / 2, HDR_Y + HDR_H / 2 - 5,
                                 "Anderson Diagnostics & Labs")
         c.restoreState()
 
