@@ -1655,6 +1655,22 @@ _GUIDE_HTML = """
 def main():
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
+
+    # Check optional dependencies that may be missing on a fresh install
+    _missing = []
+    for _pkg in ("xlrd", "openpyxl", "reportlab", "pdfplumber", "pypdfium2", "PIL"):
+        try:
+            __import__(_pkg)
+        except ImportError:
+            _missing.append(_pkg)
+    if _missing:
+        QMessageBox.critical(
+            None, "Missing Dependencies",
+            "The following packages are not installed:\n\n"
+            + "\n".join(f"  \u2022 {m}" for m in _missing)
+            + "\n\nRun:  pip install -r requirements.txt\nthen restart the application."
+        )
+        sys.exit(1)
     _icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tera_icon.png")
     if os.path.exists(_icon_path):
         app.setWindowIcon(QIcon(_icon_path))

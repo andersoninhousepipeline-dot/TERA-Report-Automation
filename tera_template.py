@@ -490,6 +490,7 @@ class TERAReportGenerator:
         para_style = ParagraphStyle(
             "TeraStatus",
             fontName=F_BODY, fontSize=12, leading=24,
+            alignment=TA_JUSTIFY,
             textColor=BLACK, spaceAfter=0, spaceBefore=0,
         )
         para = Paragraph(html, para_style)
@@ -610,10 +611,8 @@ class TERAReportGenerator:
             y = _justified_block(c, para, 72, y, CONTENT_W, F_BODY, 11, 22)
             y -= 23     # inter-paragraph gap (matches reference: 23.3 pt bottom-to-top)
 
-        # "Methodology" heading — 35pt below last About TERA line
-        # (reference: 67.6 pt from para3 bottom to heading baseline = 23 pt loop gap + 35 pt here
-        #  + ~10 pt from ReportLab paragraph trailing space)
-        meth_y = y - 35
+        # "Methodology" heading — 18pt below last About TERA paragraph
+        meth_y = y - 18
         c.setFont(F_HDG, 14)
         c.setFillColor(BLUE)
         c.drawString(78.9, meth_y, "Methodology")
@@ -716,12 +715,18 @@ class TERAReportGenerator:
         age   = f"{age_r} Years" if age_r else "Not Provided"
         doc   = self._s(d.get("Doctor Name", "")) or "Not Provided"
         hosp  = self._s(d.get("Center name", d.get("Hospital", d.get("Hospital ", ""))))
-        # Cycle type display: "{Cycle Type} + {Biopsy days}" (e.g. "HRT + 5")
-        # Biopsy column (col E) holds the day number (5 = P+5 days of progesterone)
-        cyc_raw      = self._s(d.get("Cycle Type", d.get("Cycle type", "HRT")))
-        biopsy_days  = self._int(d.get("Biopsy", ""))
-        cyc = (f"{cyc_raw} + {biopsy_days}" if cyc_raw and biopsy_days is not None
-               else cyc_raw or "Not Provided")
+        # Cycle type display:
+        #   HRT               → "HRT; P+{N}"  (N = Biopsy column value, e.g. 5)
+        #   Modified Natural Cycle → "Modified Natural Cycle"  (no suffix)
+        cyc_raw     = self._s(d.get("Cycle Type", d.get("Cycle type", "HRT")))
+        biopsy_days = self._int(d.get("Biopsy", ""))
+        cyc_upper   = cyc_raw.upper()
+        if "HRT" in cyc_upper:
+            cyc = (f"HRT; P+{biopsy_days}" if biopsy_days is not None else "HRT")
+        elif cyc_raw:
+            cyc = cyc_raw          # e.g. "Modified Natural Cycle" — unchanged
+        else:
+            cyc = "Not Provided"
         bno   = self._s(d.get("Biopsy No.",  d.get("Biopsy", "")))
         # P4 date: 'P4 /hCG injection  date time' column (string datetime)
         p4d   = self._dt(d.get("P4 /hCG injection  date time", ""))
