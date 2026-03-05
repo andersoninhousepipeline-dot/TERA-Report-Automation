@@ -137,7 +137,7 @@ FTR_X, FTR_Y, FTR_W, FTR_H = 72.75, 8.0,      481.9, 34.0
 # Patient info table
 TBL_X          = 45.84
 TBL_TOP_RL     = H - 143.78    # 648.22 – RL y of table top edge
-TBL_COL_WIDTHS = [111.26, 7.08, 205.61, 91.22, 9.01, 109.10]   # total 533.28
+TBL_COL_WIDTHS = [111.26, 7.08, 200.61, 91.22, 9.01, 114.10]   # total 533.28; right value col widened 5pt for "Modified Natural Cycle"
 TBL_W          = sum(TBL_COL_WIDTHS)
 TBL_PAD_TOP    = 9              # vertical padding above text in each cell (3pt less = content 3pt higher)
 
@@ -611,8 +611,8 @@ class TERAReportGenerator:
             y = _justified_block(c, para, 72, y, CONTENT_W, F_BODY, 11, 22)
             y -= 23     # inter-paragraph gap (matches reference: 23.3 pt bottom-to-top)
 
-        # "Methodology" heading — 18pt below last About TERA paragraph
-        meth_y = y - 18
+        # "Methodology" heading — 8pt below last About TERA paragraph
+        meth_y = y - 8
         c.setFont(F_HDG, 14)
         c.setFillColor(BLUE)
         c.drawString(78.9, meth_y, "Methodology")
