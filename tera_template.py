@@ -44,7 +44,7 @@ from reportlab.pdfgen          import canvas
 from reportlab.lib.colors      import Color, black, white, HexColor
 from reportlab.lib.utils       import ImageReader
 from reportlab.lib.styles      import ParagraphStyle
-from reportlab.lib.enums       import TA_JUSTIFY
+from reportlab.lib.enums       import TA_JUSTIFY, TA_LEFT
 from reportlab.platypus        import Paragraph, Table, TableStyle
 from reportlab.pdfbase         import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -240,7 +240,7 @@ def _left_para(c, text_html, x, y, max_w, font, size, leading):
     style = ParagraphStyle(
         "LPara",
         fontName=font, fontSize=size, leading=leading,
-        alignment=TA_JUSTIFY,
+        alignment=TA_LEFT,
         spaceAfter=0, spaceBefore=0,
     )
     para = Paragraph(text_html, style)
