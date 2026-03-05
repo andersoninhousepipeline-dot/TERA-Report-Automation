@@ -31,7 +31,7 @@ from PyQt6.QtWidgets import (
     QButtonGroup,
 )
 from PyQt6.QtCore import Qt, QThread, pyqtSignal, QSettings, QTimer, QItemSelectionModel
-from PyQt6.QtGui import QPixmap, QFont, QColor
+from PyQt6.QtGui import QPixmap, QFont, QColor, QIcon
 
 from tera_template import TERAReportGenerator
 
@@ -373,6 +373,9 @@ class TERAReportApp(QMainWindow):
     # ═══════════════════════════════════════════════════════════════════════════
     def _init_ui(self):
         self.setWindowTitle("TERA Report Generator")
+        _icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tera_icon.png")
+        if os.path.exists(_icon_path):
+            self.setWindowIcon(QIcon(_icon_path))
         self.setMinimumSize(1350, 840)
         self.resize(1500, 900)
 
@@ -1650,6 +1653,9 @@ _GUIDE_HTML = """
 def main():
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
+    _icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tera_icon.png")
+    if os.path.exists(_icon_path):
+        app.setWindowIcon(QIcon(_icon_path))
     window = TERAReportApp()
     window.show()
     sys.exit(app.exec())

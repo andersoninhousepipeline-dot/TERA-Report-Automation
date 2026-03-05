@@ -160,8 +160,8 @@ RESULT_CFG = {
         "has_biopsy2":   False,
         "blast_x": 171.7, "blast_y": H - 613.0,
         "cleave_x":170.4, "cleave_y": H - 670.6,
-        "reco_suffix": "post first | progesterone intake",
-        "recom_max_w": 340,
+        "reco_suffix": "post first progesterone intake",
+        "recom_max_w": 280,
         # Icon
         "icon_y": H - 706.5,
         # Status text content
@@ -178,8 +178,8 @@ RESULT_CFG = {
         "has_biopsy2":   False,
         "blast_x": 171.7, "blast_y": H - 609.7,
         "cleave_x":170.4, "cleave_y": H - 667.3,
-        "reco_suffix": "post first | progesterone intake",
-        "recom_max_w": 340,
+        "reco_suffix": "post first progesterone intake",
+        "recom_max_w": 280,
         "icon_y": H - 703.3,
         "bold_phrase": "pre-receptive endometrium",
         "displaced":   True,
@@ -232,21 +232,49 @@ def _wrap(c, text, x, y, max_w, font, size, leading):
     return y
 
 
-def _left_para(c, text_html, x, y, max_w, font, size, leading):
-    """Draw left-aligned Paragraph with HTML (inline <font> tags supported).
-    Use this for recommendation lines so ± can be rendered in Calibri-Bold
-    while the rest of the text stays in font (DengXian-Bold).
+def _wrap_pm(c, text, x, y, max_w, font, size, leading):
+    """Like _wrap but renders the ± word in Helvetica-Bold (Type1 built-in).
+    Helvetica-Bold is a standard PDF font guaranteed to render ± (U+00B1).
+    All other words are drawn in `font`.
     """
-    style = ParagraphStyle(
-        "LPara",
-        fontName=font, fontSize=size, leading=leading,
-        alignment=TA_LEFT,
-        spaceAfter=0, spaceBefore=0,
-    )
-    para = Paragraph(text_html, style)
-    _, h = para.wrap(max_w, 2000)
-    offset = leading - size
-    para.drawOn(c, x, y - h + offset)
+    PM = '\u00b1'
+    PM_FONT = 'Helvetica-Bold'
+    space_w = c.stringWidth(' ', font, size)
+
+    def word_w(w):
+        return c.stringWidth(PM, PM_FONT, size) if w == PM else c.stringWidth(w, font, size)
+
+    def draw_line(words_list, lx, ly):
+        cx = lx
+        for i, w in enumerate(words_list):
+            if i > 0:
+                c.setFont(font, size)
+                c.drawString(cx, ly, ' ')
+                cx += space_w
+            if w == PM:
+                c.setFont(PM_FONT, size)
+            else:
+                c.setFont(font, size)
+            c.drawString(cx, ly, w)
+            cx += word_w(w)
+
+    words = text.split()
+    line_words, line_w = [], 0.0
+    for w in words:
+        ww = word_w(w)
+        gap = space_w if line_words else 0.0
+        if line_w + gap + ww <= max_w:
+            line_words.append(w)
+            line_w += gap + ww
+        else:
+            if line_words:
+                draw_line(line_words, x, y)
+                y -= leading
+            line_words, line_w = [w], ww
+    if line_words:
+        draw_line(line_words, x, y)
+        y -= leading
+    return y
 
 
 def _justified_block(c, text, x, y, max_w, font, size, leading):
@@ -516,20 +544,19 @@ class TERAReportGenerator:
             _wrap(c, note, 83.4, note_y, TBL_W - 20, F_BBOLD, 11, 14)
 
         reco_w = cfg.get("recom_max_w", 380.0)
-
-        # ± renders as .notdef in DengXian-Bold; use Calibri-Bold inline just for that glyph
-        def _pm(lbl):
-            return lbl.replace('\u00b1', '<font name="Calibri-Bold">\u00b1</font>')
+        # Use Calibri-Bold for text; _wrap_pm switches to Helvetica-Bold for ±
+        # (Helvetica-Bold is a built-in Type1 PDF font guaranteed to render ±)
+        reco_font = "Calibri-Bold" if _font_ok("Calibri-Bold") else F_BBOLD
 
         # 5. Blastocyst transfer line
-        _left_para(c,
-                   f"Blastocyst transfer (Day 5/6 embryo): {_pm(blast_lbl)} {suffix}",
-                   cfg["blast_x"], cfg["blast_y"], reco_w, F_BBOLD, 11, 17)
+        _wrap_pm(c,
+                 f"Blastocyst transfer (Day 5/6 embryo): {blast_lbl} {suffix}",
+                 cfg["blast_x"], cfg["blast_y"], reco_w, reco_font, 11, 17)
 
         # 6. Cleavage stage transfer line
-        _left_para(c,
-                   f"Cleavage stage transfer (Day 3 embryo): {_pm(cleave_lbl)} {suffix}",
-                   cfg["cleave_x"], cfg["cleave_y"], reco_w, F_BBOLD, 11, 17)
+        _wrap_pm(c,
+                 f"Cleavage stage transfer (Day 3 embryo): {cleave_lbl} {suffix}",
+                 cfg["cleave_x"], cfg["cleave_y"], reco_w, reco_font, 11, 17)
 
     # ═══════════════════════════════════════════════════════════════════════════
     # PAGE 2 – About TERA + Methodology
