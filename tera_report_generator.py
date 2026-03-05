@@ -52,7 +52,7 @@ TERA_FIELD_DEFS = [
     ("Biopsy No.",           "Biopsy No.",                     "line",  "Endometrial Biopsy- 1"),
     ("Doctor Name",          "Doctor Name",                    "line",  ""),
     ("Center / Hospital",    "Center name",                    "line",  ""),
-    ("Cycle Type",           "Cycle Type",                     "combo", ["HRT", "Natural", "Stimulated"]),
+    ("Cycle Type",           "Cycle Type",                     "combo", ["HRT", "Modified Natural Cycle", "Natural Cycle", "Natural", "Stimulated"]),
     ("P4/hCG Date & Time",   "P4 /hCG injection  date time",  "line",  ""),
     ("Biopsy Date & Time",   "Biopsy time in hrs",             "line",  ""),
     ("P+ Hours",             "Biopsy time in hrs.1",           "line",  ""),
@@ -601,11 +601,18 @@ class TERAReportApp(QMainWindow):
         for key, (w, wtype) in self._manual_inputs.items():
             val = _clean(data.get(key, ""))
             if wtype == "combo":
+                matched = False
                 for i in range(w.count()):
-                    if (w.itemText(i).lower() in val.lower() or
-                            val.lower() in w.itemText(i).lower()):
+                    if w.itemText(i).lower() == val.lower():
                         w.setCurrentIndex(i)
+                        matched = True
                         break
+                if not matched:
+                    for i in range(w.count()):
+                        item = w.itemText(i).lower()
+                        if val.lower().startswith(item) or item.startswith(val.lower()):
+                            w.setCurrentIndex(i)
+                            break
             else:
                 w.setText(val)
 
@@ -995,11 +1002,16 @@ class TERAReportApp(QMainWindow):
                         matched = True
                         break
                 if not matched:
-                    # Fallback: substring — value contains item text
+                    # Fallback: item text starts with value or value starts with item text
+                    # (avoids "Natural" matching "Modified Natural Cycle")
                     for i in range(w.count()):
-                        if w.itemText(i).lower() in val.lower():
+                        item = w.itemText(i).lower()
+                        if val.lower().startswith(item) or item.startswith(val.lower()):
                             w.setCurrentIndex(i)
+                            matched = True
                             break
+                if not matched:
+                    w.setCurrentIndex(0)
             else:
                 w.setText(val)
         for key, (w, wtype) in self._bulk_editor_inputs.items():
