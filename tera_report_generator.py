@@ -759,6 +759,7 @@ class TERAReportApp(QMainWindow):
         self._bulk_table = QTableWidget()
         self._bulk_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self._bulk_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self._bulk_table.verticalHeader().setVisible(False)
         self._bulk_table.horizontalHeader().setStretchLastSection(True)
         self._bulk_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.ResizeToContents)
