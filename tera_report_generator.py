@@ -636,9 +636,7 @@ class TERAReportApp(QMainWindow):
             box.setText(
                 f"Report generated successfully.\n\n"
                 f"File: {os.path.basename(path)}\n"
-                f"Folder: {out_dir}\n\n"
-                "Open the PDF in Evince, Okular, or Firefox\n"
-                "(not VS Code — it will show as raw text)."
+                f"Folder: {out_dir}"
             )
             btn_open = box.addButton("Open Folder",
                                      QMessageBox.ButtonRole.ActionRole)
@@ -1185,9 +1183,7 @@ class TERAReportApp(QMainWindow):
             box.setIcon(QMessageBox.Icon.Information)
             box.setText(
                 f"{successes} report(s) generated successfully.\n\n"
-                f"Saved to:\n{out_dir}\n\n"
-                "Open PDFs in Evince, Okular, or Firefox\n"
-                "(not VS Code)."
+                f"Saved to:\n{out_dir}"
             )
             btn_open = box.addButton("Open Folder",
                                      QMessageBox.ButtonRole.ActionRole)
@@ -1629,13 +1625,19 @@ _GUIDE_HTML = """
 </div>
 
 <div class="card">
-  <h3>5. System Requirements</h3>
+  <h3>5. System Requirements &amp; Installation</h3>
   <ul>
     <li>Python 3.10+, PyQt6 &ge; 6.6, ReportLab &ge; 4.0</li>
     <li>pandas, xlrd, openpyxl, Pillow, pypdfium2</li>
-    <li>Install: <code>pip install -r requirements.txt</code></li>
-    <li>PDF viewer: <b>Evince, Okular,</b> or <b>Firefox</b>
-        — <em>not</em> VS Code (shows binary as text).</li>
+    <li><b>Step 1 — Install Python packages:</b><br>
+        <code>pip install -r requirements.txt</code></li>
+    <li><b>Step 2 — Install bundled fonts (run once):</b><br>
+        <code>python install_fonts.py</code><br>
+        <small>Copies Calibri, SegoeUI, GillSansMT and DengXian fonts to your system font folder
+        (<em>Windows:</em> C:\Windows\Fonts &nbsp;|&nbsp;
+         <em>Linux:</em> ~/.local/share/fonts/TERA &nbsp;|&nbsp;
+         <em>macOS:</em> ~/Library/Fonts).
+        On Windows, run as Administrator if prompted.</small></li>
   </ul>
 </div>
 
