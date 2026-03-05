@@ -53,6 +53,7 @@ TERA_FIELD_DEFS = [
     ("Doctor Name",          "Doctor Name",                    "line",  ""),
     ("Center / Hospital",    "Center name",                    "line",  ""),
     ("Cycle Type",           "Cycle Type",                     "combo", ["HRT", "Modified Natural Cycle", "Natural Cycle", "Natural", "Stimulated"]),
+    ("P+ Day (Biopsy)",      "Biopsy",                         "line",  "5"),
     ("P4/hCG Date & Time",   "P4 /hCG injection  date time",  "line",  ""),
     ("Biopsy Date & Time",   "Biopsy time in hrs",             "line",  ""),
     ("P+ Hours",             "Biopsy time in hrs.1",           "line",  ""),
