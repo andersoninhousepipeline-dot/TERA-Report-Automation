@@ -37,8 +37,16 @@ DATA COLUMNS (from TERA automation report Excel):
   Date of Received          → specimen receipt date (Timestamp)
 """
 
-import os, io, re, base64
+import os, io, re, base64, sys
 from datetime import datetime
+
+
+def _resource_path(relative: str) -> str:
+    """Resolve path to a bundled resource.
+    Works both in normal Python and when frozen by PyInstaller (sys._MEIPASS).
+    """
+    base = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base, relative)
 
 from reportlab.pdfgen          import canvas
 from reportlab.lib.colors      import Color, black, white, HexColor
@@ -61,7 +69,7 @@ BLACK    = black
 WHITE    = white
 
 # ─── Font registration ────────────────────────────────────────────────────────
-_FONT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts")
+_FONT_DIR = _resource_path("fonts")
 
 def _reg(name, filename):
     path = os.path.join(_FONT_DIR, filename)

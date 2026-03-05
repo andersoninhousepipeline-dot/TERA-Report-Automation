@@ -19,6 +19,12 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 
+
+def _resource_path(relative: str) -> str:
+    """Resolve path to a bundled resource (works frozen and un-frozen)."""
+    base = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base, relative)
+
 import pandas as pd
 
 from PyQt6.QtWidgets import (
@@ -374,7 +380,7 @@ class TERAReportApp(QMainWindow):
     # ═══════════════════════════════════════════════════════════════════════════
     def _init_ui(self):
         self.setWindowTitle("TERA Report Generator")
-        _icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tera_icon.png")
+        _icon_path = _resource_path("tera_icon.png")
         if os.path.exists(_icon_path):
             self.setWindowIcon(QIcon(_icon_path))
         self.setMinimumSize(1350, 840)
@@ -1685,7 +1691,7 @@ def main():
             + "\n\nRun:  pip install -r requirements.txt\nthen restart the application."
         )
         sys.exit(1)
-    _icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tera_icon.png")
+    _icon_path = _resource_path("tera_icon.png")
     if os.path.exists(_icon_path):
         app.setWindowIcon(QIcon(_icon_path))
     window = TERAReportApp()
