@@ -62,6 +62,7 @@ import tera_assets
 
 # ─── Colours ──────────────────────────────────────────────────────────────────
 BLUE     = Color(0.122, 0.286, 0.49)      # #1F497D  – headings & title
+BLUE_HEX = "#1F497D"                      # For PDF Paragraphs
 MED_BLUE = Color(0.310, 0.506, 0.741)     # #4F81BD  – "This report reviewed…"
 FIELD    = HexColor('#F1F1F7')            # lavender  – patient table background
 GRAY_SIG = Color(0.2, 0.2, 0.2)          # #333333   – reviewer names & titles
@@ -197,14 +198,14 @@ RESULT_CFG = {
         "chart_x": 336.00, "chart_y": H - 509.05, "chart_w": 216.85, "chart_h": 127.55,
         "box_x": 72, "box_y": H - 503.90, "box_w": 257.25, "box_h": 123.85,
         "status_x": 79.2,  "status_max_w": 250.05,
-        "hdg_recom_y":   H - 530.1,
-        "recom_line_y":  H - 539.35,
+        "hdg_recom_y":   H - 520.0,
+        "recom_line_y":  H - 530.0,
         "has_biopsy2":   True,
-        "blast_x": 171.7, "blast_y": H - 604.2,
-        "cleave_x":170.4, "cleave_y": H - 661.8,
+        "blast_x": 171.7, "blast_y": H - 620.0,
+        "cleave_x":170.4, "cleave_y": H - 680.0,
         "reco_suffix": "post first P4 intake",
         "recom_max_w": 380,
-        "icon_y": H - 697.75,
+        "icon_y": H - 715.0,
         "bold_phrase": "post-receptive endometrium",
         "displaced":   True,
         "asset": "POST_RECPTIVE",
@@ -236,6 +237,46 @@ def _wrap(c, text, x, y, max_w, font, size, leading):
             line = w + " "
     if line.strip():
         c.drawString(x, y, line.rstrip())
+        y -= leading
+    return y
+
+
+def _wrap_justify(c, text, x, y, max_w, font, size, leading, first_line_indent=0):
+    """Word-wrap text with full justification, return y after the last drawn line."""
+    words = text.split()
+    lines = []
+    line = []
+    for w in words:
+        trial = " ".join(line + [w])
+        indent = first_line_indent if not lines else 0
+        if c.stringWidth(trial, font, size) <= (max_w - indent):
+            line.append(w)
+        else:
+            if line:
+                lines.append(line)
+            line = [w]
+    if line:
+        lines.append(line)
+
+    for idx, l in enumerate(lines):
+        line_str = " ".join(l)
+        indent = first_line_indent if idx == 0 else 0
+        if idx == len(lines) - 1:
+            # Last line: left-aligned
+            c.drawString(x + indent, y, line_str)
+        else:
+            # Full justification
+            if len(l) > 1:
+                total_w = c.stringWidth(line_str, font, size)
+                space_to_add = (max_w - indent) - total_w
+                extra_space = space_to_add / (len(l) - 1)
+                
+                curr_x = x + indent
+                for w_idx, w in enumerate(l):
+                    c.drawString(curr_x, y, w)
+                    curr_x += c.stringWidth(w, font, size) + c.stringWidth(" ", font, size) + extra_space
+            else:
+                c.drawString(x + indent, y, line_str)
         y -= leading
     return y
 
@@ -543,14 +584,28 @@ class TERAReportGenerator:
 
         # 4. Second biopsy note (post-receptive only) – appears between divider and transfer lines
         if cfg["has_biopsy2"]:
-            b2_int = self._int(self.d.get("Biopsy2 time in hrs", ""))
-            note = (f"A Second biopsy at P+{b2_int} Hrs is strongly recommended "
-                    f"to confirm the Window of implantation"
-                    if b2_int is not None else
-                    "A Second biopsy is strongly recommended to confirm the Window of implantation")
-            # Starts ~20 pt below the divider line
-            note_y = cfg["recom_line_y"] - 20
-            _wrap(c, note, 83.4, note_y, TBL_W - 20, F_BBOLD, 11, 14)
+            # Robust Justified Direct Drawing: Full justification for a typeset look
+            c.setFont(F_LBL, 11)
+            draw_x = 72.0
+            # Narrower width: align to DIV_X1 (554.65) to avoid crossing underlines
+            wrap_total_w = DIV_X1 - draw_x - 5 
+            
+            # --- Note 1: Justified ---
+            n1 = "A Second biopsy at P+98 Hrs and P+120Hrs is strongly recommended to confirm the Window of implantation."
+            curr_y = cfg["recom_line_y"] - 14
+            curr_y = _wrap_justify(c, n1, draw_x, curr_y, wrap_total_w, F_LBL, 11, 14)
+            
+            # --- Note 2: prefix Blue, rest Black, Fully Justified ---
+            curr_y -= 8 # Gap between paragraphs
+            prefix = "Note: "
+            rem = "Patients with post-receptive endometria are prone to cycle-to-cycle variation. Hence repeat biopsy is suggested."
+            
+            c.setFillColor(BLUE)
+            c.drawString(draw_x, curr_y, prefix)
+            pw = c.stringWidth(prefix, F_LBL, 11)
+            c.setFillColor(BLACK)
+            
+            curr_y = _wrap_justify(c, rem, draw_x, curr_y, wrap_total_w, F_LBL, 11, 14, first_line_indent=pw)
 
         reco_w = cfg.get("recom_max_w", 380.0)
         # Use Calibri-Bold for text; _wrap_pm switches to Helvetica-Bold for ±
@@ -742,7 +797,9 @@ class TERAReportGenerator:
         biod  = self._dt(d.get("Biopsy time in hrs", ""))
         # Receipt date: Timestamp from 'Date of Received'
         rcpt  = self._dt(d.get("Date of Received", ""), date_only=True)
-        today = datetime.today().strftime("%d-%m-%Y")
+        # Custom Report Date from field, fallback to today
+        rep_date_raw = self._s(d.get("Report Date", ""))
+        today = rep_date_raw if rep_date_raw else datetime.today().strftime("%d-%m-%Y")
 
         return [
             ("Patient Name",          name,  "PIN",                  pin),
@@ -778,14 +835,16 @@ class TERAReportGenerator:
 
     @staticmethod
     def _int(val):
-        """Safe integer conversion; returns None on failure."""
+        """Safe integer conversion with mathematical rounding; returns None on failure."""
         if val is None:
             return None
         s = str(val).strip()
         if s in ("", "nan", "NaT", "None", "NaN"):
             return None
         try:
-            return round(float(s))
+            import math
+            f = float(s)
+            return math.floor(f + 0.5)
         except Exception:
             return None
 

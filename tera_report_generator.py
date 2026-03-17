@@ -66,6 +66,7 @@ TERA_FIELD_DEFS = [
     ("TERA Result",          "TERA result",                    "combo", ["Receptive", "Pre-receptive", "Post-receptive"]),
     ("Time for Report",      "Time for report",                "line",  ""),
     ("Date Received",        "Date of Received",               "line",  ""),
+    ("Report Date",          "Report Date",                    "line",  ""),
 ]
 
 # Columns shown in the bulk upload table (S.No. + name only — details in editor)
