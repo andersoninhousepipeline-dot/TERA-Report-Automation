@@ -579,6 +579,10 @@ class TERAReportGenerator:
         blast_lbl, cleave_lbl = self._parse_tr(tr_raw)
         suffix = cfg["reco_suffix"]
 
+        # Extract numeric base from blast_lbl (e.g. "94 ± 2 hrs" → 94)
+        _bm = re.match(r'(\d+)', blast_lbl)
+        biopsy2_hrs = int(_bm.group(1)) if _bm else 98
+
         c.setFont(F_BBOLD, 11)
         c.setFillColor(BLACK)
 
@@ -588,10 +592,10 @@ class TERAReportGenerator:
             c.setFont(F_LBL, 11)
             draw_x = 72.0
             # Narrower width: align to DIV_X1 (554.65) to avoid crossing underlines
-            wrap_total_w = DIV_X1 - draw_x - 5 
-            
+            wrap_total_w = DIV_X1 - draw_x - 5
+
             # --- Note 1: Justified ---
-            n1 = "A Second biopsy at P+98 Hrs and P+120Hrs is strongly recommended to confirm the Window of implantation."
+            n1 = f"A Second biopsy at P+{biopsy2_hrs} Hrs and P+120Hrs is strongly recommended to confirm the Window of implantation."
             curr_y = cfg["recom_line_y"] - 14
             curr_y = _wrap_justify(c, n1, draw_x, curr_y, wrap_total_w, F_LBL, 11, 14)
             
