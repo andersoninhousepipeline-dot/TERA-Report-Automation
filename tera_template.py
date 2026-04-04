@@ -595,7 +595,7 @@ class TERAReportGenerator:
             wrap_total_w = DIV_X1 - draw_x - 5
 
             # --- Note 1: Justified ---
-            n1 = f"A Second biopsy at P+{biopsy2_hrs} Hrs and P+120Hrs is strongly recommended to confirm the Window of implantation."
+            n1 = f"A Second biopsy at P+{biopsy2_hrs}hrs and P+120hrs is strongly recommended to confirm the Window of implantation."
             curr_y = cfg["recom_line_y"] - 14
             curr_y = _wrap_justify(c, n1, draw_x, curr_y, wrap_total_w, F_LBL, 11, 14)
             
