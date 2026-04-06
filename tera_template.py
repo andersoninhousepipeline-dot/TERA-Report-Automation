@@ -282,16 +282,33 @@ def _wrap_justify(c, text, x, y, max_w, font, size, leading, first_line_indent=0
 
 
 def _wrap_pm(c, text, x, y, max_w, font, size, leading):
-    """Like _wrap but renders the ± word in Helvetica-Bold (Type1 built-in).
-    Helvetica-Bold is a standard PDF font guaranteed to render ± (U+00B1).
-    All other words are drawn in `font`.
+    """Like _wrap but renders ± in Helvetica-Bold (Type1 built-in, guaranteed ±).
+    Handles ± embedded inside a token (e.g. '94±2') so no extra spaces are added
+    around the symbol — giving uniform visual spacing.
     """
     PM = '\u00b1'
     PM_FONT = 'Helvetica-Bold'
     space_w = c.stringWidth(' ', font, size)
 
-    def word_w(w):
-        return c.stringWidth(PM, PM_FONT, size) if w == PM else c.stringWidth(w, font, size)
+    def token_w(tok):
+        if PM in tok:
+            idx = tok.index(PM)
+            return (c.stringWidth(tok[:idx], font, size)
+                    + c.stringWidth(PM, PM_FONT, size)
+                    + c.stringWidth(tok[idx + 1:], font, size))
+        return c.stringWidth(tok, font, size)
+
+    def draw_token(tok, cx, ly):
+        if PM in tok:
+            idx = tok.index(PM)
+            pre, post = tok[:idx], tok[idx + 1:]
+            c.setFont(font, size); c.drawString(cx, ly, pre)
+            cx += c.stringWidth(pre, font, size)
+            c.setFont(PM_FONT, size); c.drawString(cx, ly, PM)
+            cx += c.stringWidth(PM, PM_FONT, size)
+            c.setFont(font, size); c.drawString(cx, ly, post)
+        else:
+            c.setFont(font, size); c.drawString(cx, ly, tok)
 
     def draw_line(words_list, lx, ly):
         cx = lx
@@ -300,17 +317,13 @@ def _wrap_pm(c, text, x, y, max_w, font, size, leading):
                 c.setFont(font, size)
                 c.drawString(cx, ly, ' ')
                 cx += space_w
-            if w == PM:
-                c.setFont(PM_FONT, size)
-            else:
-                c.setFont(font, size)
-            c.drawString(cx, ly, w)
-            cx += word_w(w)
+            draw_token(w, cx, ly)
+            cx += token_w(w)
 
     words = text.split()
     line_words, line_w = [], 0.0
     for w in words:
-        ww = word_w(w)
+        ww = token_w(w)
         gap = space_w if line_words else 0.0
         if line_w + gap + ww <= max_w:
             line_words.append(w)
@@ -898,9 +911,9 @@ class TERAReportGenerator:
         if m:
             base   = round(float(m.group(1)))
             margin = m.group(2)
-            return f"{base} \u00b1 {margin} hrs", f"{base - 48} \u00b1 {margin} hrs"
+            return f"{base}\u00b1{margin} hrs", f"{base - 48}\u00b1{margin} hrs"
         try:
             base = round(float(raw))
-            return f"{base} \u00b1 2 hrs", f"{base - 48} \u00b1 2 hrs"
+            return f"{base}\u00b12 hrs", f"{base - 48}\u00b12 hrs"
         except Exception:
             return raw, "N/A"
