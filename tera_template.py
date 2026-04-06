@@ -527,7 +527,7 @@ class TERAReportGenerator:
 
         # 4. Status paragraph – DengXian 12pt with inline bold for result phrase
         bh_int = self._int(self.d.get("Biopsy time in hrs.1", ""))
-        bh_lbl = f"P+{bh_int} Hrs" if bh_int is not None else "the biopsy time"
+        bh_lbl = f"P+{bh_int} hrs" if bh_int is not None else "the biopsy time"
 
         suffix = (" and therefore represents a displaced window of implantation."
                   if cfg["displaced"] else
