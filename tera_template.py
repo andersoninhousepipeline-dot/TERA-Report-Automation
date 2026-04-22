@@ -203,7 +203,7 @@ RESULT_CFG = {
         "has_biopsy2":   True,
         "blast_x": 171.7, "blast_y": H - 620.0,
         "cleave_x":170.4, "cleave_y": H - 680.0,
-        "reco_suffix": "post first P4 intake",
+        "reco_suffix": "post first progesterone intake",
         "recom_max_w": 380,
         "icon_y": H - 715.0,
         "bold_phrase": "post-receptive endometrium",
@@ -476,8 +476,8 @@ class TERAReportGenerator:
             # 2pt left padding shifts content 2pt right
             ("LEFTPADDING",   (0, 0), (-1, -1), 2),
             ("RIGHTPADDING",  (0, 0), (-1, -1), 2),
-            # Zero right padding on right-label column (col 3): "First P4 intake date"
-            # is 90.5 pt; the column is 91.22 pt — needs all available space.
+            # Zero right padding on right-label column (col 3): "First progesterone intake date"
+            # wraps within 91.22 pt; zero padding gives it maximum available space.
             ("RIGHTPADDING",  (3, 0), (3, -1), 0),
             ("TOPPADDING",    (0, 0), (-1, -1), TBL_PAD_TOP),
             ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
@@ -809,7 +809,7 @@ class TERAReportGenerator:
             ("Patient Name",          name,  "PIN",                  pin),
             ("Date of Birth/ Age",    age,   "Sample Number",        sid),
             ("Referring Clinician",   doc,   "Cycle type",           cyc),
-            ("Hospital/Clinic",       hosp,  "First P4 intake date", p4d),
+            ("Hospital/Clinic",       hosp,  "First progesterone intake date", p4d),
             ("Specimen",              bno,   "Biopsy date",          biod),
             ("Specimen receipt date", rcpt,  "Report date",          today),
         ]
