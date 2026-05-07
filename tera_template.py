@@ -172,7 +172,7 @@ RESULT_CFG = {
         "reco_suffix": "post first progesterone intake",
         "recom_max_w": 280,
         # Icon
-        "icon_y": H - 706.5,
+        "icon_y": H - 694.5,
         # Status text content
         "bold_phrase": "receptive endometrium",
         "displaced":   False,
@@ -189,7 +189,7 @@ RESULT_CFG = {
         "cleave_x":170.4, "cleave_y": H - 667.3,
         "reco_suffix": "post first progesterone intake",
         "recom_max_w": 280,
-        "icon_y": H - 703.3,
+        "icon_y": H - 691.3,
         "bold_phrase": "pre-receptive endometrium",
         "displaced":   True,
         "asset": "PRE_RECEPTIVE",
@@ -205,7 +205,7 @@ RESULT_CFG = {
         "cleave_x":170.4, "cleave_y": H - 680.0,
         "reco_suffix": "post first progesterone intake",
         "recom_max_w": 380,
-        "icon_y": H - 715.0,
+        "icon_y": H - 703.0,
         "bold_phrase": "post-receptive endometrium",
         "displaced":   True,
         "asset": "POST_RECPTIVE",
@@ -425,12 +425,22 @@ class TERAReportGenerator:
             pass
         c.restoreState()
 
+    def _page_number(self, c, page_num, total=3):
+        """Draw 'Page x of y' centred above the footer logo."""
+        text = f"Page {page_num} of {total}"
+        c.saveState()
+        c.setFont(F_SIG, 9)
+        c.setFillColor(GRAY_SIG)
+        c.drawCentredString(W / 2, FTR_Y + FTR_H + 28, text)
+        c.restoreState()
+
     # ═══════════════════════════════════════════════════════════════════════════
     # PAGE 1 – Patient report
     # ═══════════════════════════════════════════════════════════════════════════
     def _page1(self, c):
         self._header(c)
         self._footer(c)
+        self._page_number(c, 1)
         self._title_block(c)
         self._field_table(c)
         self._status_section(c)
@@ -443,9 +453,9 @@ class TERAReportGenerator:
         """
         c.setFont(F_TITLE, 18)
         c.setFillColor(BLUE)
-        c.drawCentredString(W / 2, H - 93.9,
+        c.drawCentredString(W / 2, H - 104.8,
                             "Transcriptome based Endometrial Receptivity Assessment")
-        c.drawCentredString(W / 2, H - 125.2, "(TERA)")
+        c.drawCentredString(W / 2, H - 136.1, "(TERA)")
 
     def _field_table(self, c):
         """Patient info table (6 rows × 6 cols) with lavender background.
@@ -659,6 +669,7 @@ class TERAReportGenerator:
     def _page2(self, c):
         self._header(c)
         self._footer(c)
+        self._page_number(c, 2)
 
         # Page content width: from x=72 to divider end x=554.65 = 482.65 pt
         CONTENT_W = DIV_X1 - 72
@@ -667,12 +678,11 @@ class TERAReportGenerator:
         # pdfplumber: x=72, top=75.2, bottom=89.2 → RL baseline = H-89.2 = 702.8
         c.setFont(F_HDG, 14)
         c.setFillColor(BLUE)
-        c.drawString(72, H - 89.2, "About TERA")
-        _divider(c, H - 98.85)          # template divider y = H-98.85
+        c.drawString(72, H - 109.2, "About TERA")
+        _divider(c, H - 118.85)
 
         # Body paragraphs – DengXian 11pt, leading 22, justified
-        # First line baseline from template: pdfplumber bottom≈125.4 → H-125.4 = 666.6
-        y = H - 125.4
+        y = H - 145.4
         c.setFillColor(BLACK)
         for para in self.ABOUT_PARAS:
             y = _justified_block(c, para, 72, y, CONTENT_W, F_BODY, 11, 22)
@@ -707,18 +717,17 @@ class TERAReportGenerator:
     def _page3(self, c):
         self._header(c)
         self._footer(c)
+        self._page_number(c, 3)
 
         # "References" heading
         # pdfplumber: x=78.9, top=75.2 → RL baseline = H-89.2 = 702.8
         c.setFont(F_HDG, 14)
         c.setFillColor(BLUE)
-        c.drawString(78.9, H - 89.2, "References")
-        _divider(c, H - 98.1)
+        c.drawString(78.9, H - 109.2, "References")
+        _divider(c, H - 118.1)
 
-        # Reference entries – DengXian 11pt, ~27 pt spacing
-        # First ref baseline from template: pdfplumber bottom≈112.15 → RL=679.85
-        REF_W = DIV_X1 - 93.9           # text width from indent to right edge
-        y = H - 112.15
+        REF_W = DIV_X1 - 93.9
+        y = H - 132.15
         c.setFont(F_BODY, 11)
         c.setFillColor(BLACK)
         for i, ref in enumerate(self.REFS, 1):
@@ -730,15 +739,14 @@ class TERAReportGenerator:
         # Arial-BoldMT 12pt, medium blue – pdfplumber top=219.4 → RL≈H-231.9=560.1
         c.setFont(F_SIGB, 12)
         c.setFillColor(MED_BLUE)
-        c.drawString(75.9, H - 231.9,
+        c.drawString(75.9, H - 251.9,
                      "This report has been reviewed and approved by:")
 
         # Signature images
-        # Positions from pdfplumber analysis (averaged across three template PDFs)
         sigs = [
-            (80.75,  H - 290.95, 71.15,  33.1,  tera_assets.SIVASHANKAR_SIGN),
-            (237.75, H - 290.95, 74.25,  33.05, tera_assets.FIONA_SIGN),
-            (406.25, H - 297.75, 100.15, 42.3,  getattr(tera_assets, "SACHIN_SIGN", None)),
+            (80.75,  H - 310.95, 71.15,  33.1,  tera_assets.SIVASHANKAR_SIGN),
+            (237.75, H - 310.95, 74.25,  33.05, tera_assets.FIONA_SIGN),
+            (406.25, H - 317.75, 100.15, 42.3,  getattr(tera_assets, "SACHIN_SIGN", None)),
         ]
         for sx, sy, sw, sh, asset in sigs:
             if asset:
@@ -756,14 +764,12 @@ class TERAReportGenerator:
         # pdfplumber top=301.9, cap_height≈8 → RL baseline = H-309.9 = 482.1
         c.setFont(F_SIG, 11)
         c.setFillColor(GRAY_SIG)
-        name_y = H - 309.9
+        name_y = H - 329.9
         c.drawString(72.0,  name_y, "S. Sivasankar, Ph. D")
         c.drawString(208.0, name_y, "Fiona D'Souza, Ph. D")
         c.drawString(395.0, name_y, "Sachin D Honguntikar, Ph. D")
 
-        # Reviewer titles – SegoeUI 11pt, dark gray
-        # pdfplumber top=320.0, cap_height≈8 → RL baseline = H-328 = 464
-        role_y = H - 328.0
+        role_y = H - 348.0
         c.drawString(72.0,  role_y, "Molecular Biologist")
         c.drawString(208.0, role_y, "Head -Scientific Operations")
         c.drawString(395.0, role_y, "Head- Clinical Genetics")
