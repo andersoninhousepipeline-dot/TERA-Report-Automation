@@ -158,7 +158,7 @@ DIV_X0, DIV_X1 = 72.75, 554.65
 RESULT_CFG = {
     "receptive": {
         # Receptivity chart image
-        "chart_x": 411.85, "chart_y": H - 496.95, "chart_w": 141,    "chart_h": 130.5,
+        "chart_x": 411.85, "chart_y": H - 506.95, "chart_w": 141,    "chart_h": 130.5,
         # White text box drawn over the chart (left half)
         "box_x": 72, "box_y": H - 507.65, "box_w": 264.75, "box_h": 111.1,
         # Status paragraph text x and max width
