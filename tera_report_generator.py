@@ -83,9 +83,15 @@ def _clean(v) -> str:
 def _open_folder(path: str):
     """Open a folder in the system file manager."""
     try:
-        subprocess.Popen(["xdg-open", path])
+        if sys.platform.startswith("win"):
+            os.startfile(path)
+        elif sys.platform == "darwin":
+            subprocess.Popen(["open", path])
+        else:
+            subprocess.Popen(["xdg-open", path])
+        return True
     except Exception:
-        pass
+        return False
 
 
 # ─── Worker: live PDF preview ──────────────────────────────────────────────────
@@ -658,7 +664,11 @@ class TERAReportApp(QMainWindow):
             box.addButton(QMessageBox.StandardButton.Ok)
             box.exec()
             if box.clickedButton() == btn_open:
-                _open_folder(out_dir)
+                if not _open_folder(out_dir):
+                    QMessageBox.warning(
+                        self, "Open Folder Failed",
+                        f"Could not open this folder automatically:\n{out_dir}"
+                    )
         except Exception as e:
             import traceback
             QMessageBox.critical(self, "Error",
@@ -1211,7 +1221,11 @@ class TERAReportApp(QMainWindow):
             box.addButton(QMessageBox.StandardButton.Ok)
             box.exec()
             if box.clickedButton() == btn_open:
-                _open_folder(out_dir)
+                if not _open_folder(out_dir):
+                    QMessageBox.warning(
+                        self, "Open Folder Failed",
+                        f"Could not open this folder automatically:\n{out_dir}"
+                    )
 
     def _bulk_save_draft(self):
         if not self.bulk_rows:
@@ -1655,7 +1669,7 @@ _GUIDE_HTML = """
     <li><b>Step 2 — Install bundled fonts (run once):</b><br>
         <code>python install_fonts.py</code><br>
         <small>Copies Calibri, SegoeUI, GillSansMT and DengXian fonts to your system font folder
-        (<em>Windows:</em> C:\Windows\Fonts &nbsp;|&nbsp;
+        (<em>Windows:</em> C:\\Windows\\Fonts &nbsp;|&nbsp;
          <em>Linux:</em> ~/.local/share/fonts/TERA &nbsp;|&nbsp;
          <em>macOS:</em> ~/Library/Fonts).
         On Windows, run as Administrator if prompted.</small></li>
