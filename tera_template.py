@@ -158,7 +158,7 @@ DIV_X0, DIV_X1 = 72.75, 554.65
 RESULT_CFG = {
     "receptive": {
         # Receptivity chart image
-        "chart_x": 411.85, "chart_y": H - 511.95, "chart_w": 141,    "chart_h": 130.5,
+        "chart_x": 411.85, "chart_y": H - 496.95, "chart_w": 141,    "chart_h": 130.5,
         # White text box drawn over the chart (left half)
         "box_x": 72, "box_y": H - 507.65, "box_w": 264.75, "box_h": 111.1,
         # Status paragraph text x and max width
@@ -179,7 +179,7 @@ RESULT_CFG = {
         "asset": "RECEPTIVE",
     },
     "pre": {
-        "chart_x": 334.70, "chart_y": H - 508.80, "chart_w": 218,    "chart_h": 127.3,
+        "chart_x": 334.70, "chart_y": H - 493.80, "chart_w": 218,    "chart_h": 127.3,
         "box_x": 72, "box_y": H - 510.90, "box_w": 250.25, "box_h": 125.6,
         "status_x": 79.2,  "status_max_w": 243.05,
         "hdg_recom_y":   H - 550.1,
@@ -195,7 +195,7 @@ RESULT_CFG = {
         "asset": "PRE_RECEPTIVE",
     },
     "post": {
-        "chart_x": 336.00, "chart_y": H - 509.05, "chart_w": 216.85, "chart_h": 127.55,
+        "chart_x": 336.00, "chart_y": H - 494.05, "chart_w": 216.85, "chart_h": 127.55,
         "box_x": 72, "box_y": H - 503.90, "box_w": 257.25, "box_h": 123.85,
         "status_x": 79.2,  "status_max_w": 250.05,
         "hdg_recom_y":   H - 520.0,
