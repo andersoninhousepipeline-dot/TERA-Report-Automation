@@ -900,7 +900,7 @@ class TERAReportGenerator:
         """
         if not raw or raw in ("nan", "NaT", "None", ""):
             return "N/A", "N/A"
-        m = re.match(r'^\s*(\d+(?:\.\d+)?)\s*\+\s*(\d+)', raw)
+        m = re.match(r'^\s*(\d+(?:\.\d+)?)\s*[+±]\s*(\d+)', raw)
         if m:
             base   = round(float(m.group(1)))
             margin = m.group(2)
