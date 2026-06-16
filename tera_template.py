@@ -37,7 +37,7 @@ DATA COLUMNS (from TERA automation report Excel):
   Date of Received          → specimen receipt date (Timestamp)
 """
 
-import os, io, re, base64, sys
+import os, io, re, base64, sys, math
 from datetime import datetime
 
 
@@ -839,7 +839,15 @@ class TERAReportGenerator:
 
     @staticmethod
     def _s(val) -> str:
-        """Return clean string; empty string for NaN/None/NaT variants."""
+        """Return clean string; empty string for NaN/None/NaT variants.
+        Whole-number floats (e.g. 34.0 from pandas) render without the trailing .0.
+        """
+        if isinstance(val, float):
+            if math.isnan(val):
+                return ""
+            if val.is_integer():
+                return str(int(val))
+            return str(val)
         s = str(val).strip()
         return "" if s in ("nan", "NaT", "None", "NaN") else s
 

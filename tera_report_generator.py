@@ -14,6 +14,7 @@ import sys
 import os
 import json
 import re
+import math
 import subprocess
 import tempfile
 from datetime import datetime
@@ -75,7 +76,15 @@ BULK_DISPLAY_COLS = ["S. No.", "Patient Name"]
 
 # ─── Helpers ───────────────────────────────────────────────────────────────────
 def _clean(v) -> str:
-    """Return clean string; empty for NaN/None/NaT."""
+    """Return clean string; empty for NaN/None/NaT.
+    Whole-number floats (e.g. 34.0 from pandas) render without the trailing .0.
+    """
+    if isinstance(v, float):
+        if math.isnan(v):
+            return ""
+        if v.is_integer():
+            return str(int(v))
+        return f"{round(v, 2):g}"
     s = str(v).strip()
     return "" if s in ("nan", "NaT", "None", "NaN", "") else s
 
